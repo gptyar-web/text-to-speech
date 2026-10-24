@@ -6,6 +6,7 @@ export default defineConfig({
   testMatch: '**/*.spec.mjs',
   fullyParallel: false,
   workers: 1,
+  outputDir: process.env.LONG_TEST ? 'test-results/long' : process.env.VOICE_TEST ? 'test-results/voice' : 'test-results/ui',
   timeout: 60000,
   use: {baseURL: 'http://127.0.0.1:4173', viewport: {width: 1440, height: 1100}, headless: true,
     launchOptions: process.env.CHROMIUM_PATH && existsSync(process.env.CHROMIUM_PATH) ? {executablePath: process.env.CHROMIUM_PATH, args: ['--no-sandbox', '--disable-dev-shm-usage', '--no-zygote', '--single-process', '--disable-gpu']} : {}},

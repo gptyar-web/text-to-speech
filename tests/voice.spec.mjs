@@ -10,7 +10,7 @@ test('Real Persian model produces non-silent, playable speech with no external t
   page.on('request', request => { if (!request.url().startsWith('http://127.0.0.1:4173') && !request.url().startsWith('blob:')) external.push(request.url()); });
   await page.goto('/');
   const text = process.env.LONG_TEST
-    ? Array.from({length: 150}, () => 'سلام. به استودیوی آوا خوش آمدید. امروز می‌خواهیم دربارهٔ زیبایی زبان فارسی صحبت کنیم. هر کلمه می‌تواند آغاز یک داستان تازه باشد. زندگی پر از فرصت‌های تازه برای یاد گرفتن و شنیدن است.').join(' ')
+    ? Array.from({length: 105}, () => 'سلام. به استودیوی آوا خوش آمدید. امروز می‌خواهیم دربارهٔ زیبایی زبان فارسی صحبت کنیم. هر کلمه می‌تواند آغاز یک داستان تازه باشد. زندگی پر از فرصت‌های تازه برای یاد گرفتن و شنیدن است.').join(' ')
     : 'سلام. به استودیوی آوا خوش آمدید. سال ۱۴۰۵ آغاز یک داستان تازه است. امروز یک روز زیبا برای شنیدن صدای فارسی است.';
   await page.locator('#text').fill(text);
   await expect(page.locator('#generate')).toBeEnabled();
