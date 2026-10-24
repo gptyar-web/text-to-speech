@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#143e35">
+  <meta name="description" content="آوا، استودیوی تبدیل متن فارسی به گفتار. تولید صوت طولانی در مرورگر، تنظیم تلفظ و سرعت، و دانلود فایل WAV؛ بدون ارسال متن به سرور.">
+  <title>آوا — استودیوی گفتار فارسی</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="./fonts/vazirmatn-arabic-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="./src/style.css">
+  <script type="module" src="./src/app.mjs"></script>
+</head>
+<body>
+  <svg class="svg-defs" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
+    <symbol id="i-wave" viewBox="0 0 24 24"><path d="M4 10v4m4-8v12m4-15v18m4-14v10m4-7v4"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M19 12H5m6-6-6 6 6 6"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="m9 5 10 7-10 7z"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V3m-5 5 5-5 5 5M4 15v5a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-5"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v13m-5-5 5 5 5-5M4 16v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6z"/><path d="m8 12 3 3 5-6"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5z"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H5v18h14V8zM14 3v5h5M8 12h8m-8 4h6"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-github" viewBox="0 0 24 24"><path d="M9 19c-4 1-4-2-6-2m12 4v-3c0-1 .1-2-.5-2.5C19 15 21 13 21 9a7 7 0 0 0-2-5c.2-1-.1-2-.3-3-2 0-3.5 1-4 1.5a14 14 0 0 0-5.4 0C8.5 2 7 1 5 1c-.2 1-.5 2-.3 3A7 7 0 0 0 3 9c0 4 2 6 6.5 6.5-.6.5-.5 1.5-.5 2.5v3"/></symbol>
+  </defs></svg>
+  <a class="skip-link" href="#text">رفتن به ویرایشگر</a>
+  <div class="page-shell">
+    <header class="site-header">
+      <a class="brand" href="#studio" aria-label="آوا، خانه"><span class="brand-icon"><svg><use href="#i-wave"/></svg></span><span>آوا<span class="brand-en" lang="en">AVĀ STUDIO</span></span></a>
+      <nav aria-label="ناوبری اصلی"><a class="nav-active" href="#studio" aria-current="page">استودیو</a><a href="#guide">راهنمای استفاده</a></nav>
+      <a class="github-link" aria-label="مخزن آوا در گیت‌هاب" href="https://github.com/gptyar-web/text-to-speech" target="_blank" rel="noopener noreferrer"><span>متن‌باز در گیت‌هاب</span><svg><use href="#i-github"/></svg></a>
+    </header>
+
+    <main id="studio">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <div class="eyebrow"><span class="small-line"></span> یک فضای تازه برای صدای کلمات</div>
+          <h1 id="hero-title">شما بنویسید، <span>آوا بخواند.</span></h1>
+          <p>از یک جمله تا یک روایت بلند؛ متن فارسی را به صدایی شنیدنی تبدیل کنید.<br class="desktop-break"> با کنترل تلفظ، بدون ارسال متن به سرور و آمادهٔ دانلود.</p>
+          <div class="hero-chips"><span><svg><use href="#i-check"/></svg> فارسی ایران</span><span><svg><use href="#i-clock"/></svg> متن‌های ۳۰ دقیقه‌ای و بیشتر</span><span><svg><use href="#i-download"/></svg> خروجی WAV</span></div>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div>
+          <div class="art-surface"><div class="art-topline"><span class="live-dot"></span><span>MADE OF WORDS</span><span>01 / FA</span></div><div class="hero-wave" data-wave="hero"></div><div class="art-bottom"><span>متن، به روایت صدا.</span><svg><use href="#i-spark"/></svg></div></div>
+          <span class="art-tag">یک متن. هزار حس.</span>
+        </div>
+      </section>
+
+      <div id="storage-warning" class="notice warning" role="status" hidden></div>
+      <div id="error" class="notice error" role="alert" tabindex="-1" hidden></div>
+      <div id="restore" class="restore-banner" hidden>
+        <span><strong>روایت ناتمام شما محفوظ است.</strong> <span id="restore-info"></span></span>
+        <div><button id="resume" class="button small primary">ادامهٔ تولید</button><button id="discard" class="button small ghost">حذف پروژهٔ قبلی</button></div>
+      </div>
+
+      <div class="studio-grid">
+        <section class="editor-card card" aria-labelledby="editor-heading">
+          <div class="card-heading"><div><span class="step-number">۰۱</span><h2 id="editor-heading">متن شما</h2></div><span class="saved-status" id="saved-status"><span class="live-dot"></span> ذخیره در این مرورگر</span></div>
+          <div class="editor-toolbar"><label class="project-name"><svg><use href="#i-file"/></svg><input id="project-name" aria-label="نام فایل صوتی" maxlength="70" placeholder="روایت تازه" value="روایت تازه"></label><div class="toolbar-buttons"><button class="text-button" id="sample"><svg><use href="#i-spark"/></svg>متن نمونه</button><button class="text-button" id="import"><svg><use href="#i-upload"/></svg>ورود فایل</button><input id="file" type="file" accept=".txt,text/plain" hidden></div></div>
+          <label class="sr-only" for="text">متن فارسی برای تبدیل به گفتار</label>
+          <textarea id="text" maxlength="120000" spellcheck="false" placeholder="هر صدای خوبی، با چند کلمه شروع می‌شود…&#10;&#10;متن فارسی خود را اینجا بنویسید یا یک فایل متنی را داخل این کادر رها کنید."></textarea>
+          <div class="editor-stats"><span><strong id="word-count">۰</strong> واژه <span class="stat-separator">/</span> <span id="char-count">۰</span> از ۱۲۰٬۰۰۰ نویسه</span><span><svg><use href="#i-clock"/></svg>زمان تقریبی: <bdi id="duration-estimate">۰:۰۰</bdi></span></div>
+          <div class="editor-bottom"><div class="local-note"><svg><use href="#i-shield"/></svg><span>متن شما، فقط روی دستگاه شما.</span></div><button class="text-button muted" id="clear">پاک کردن متن</button></div>
+        </section>
+
+        <aside class="settings-card card" aria-labelledby="settings-heading">
+          <div class="card-heading"><div><span class="step-number">۰۲</span><h2 id="settings-heading">صدای شما</h2></div><span class="language-tag">FA</span></div>
+          <div class="voice-profile"><div class="voice-avatar" aria-hidden="true"><svg><use href="#i-wave"/></svg></div><div><h3>امیر</h3><p>صدای مردانه · فارسی ایران</p></div><span class="voice-selected" role="img" aria-label="انتخاب شده"><svg><use href="#i-check"/></svg></span></div>
+          <div class="voice-visual" data-wave="voice" aria-hidden="true"></div>
+          <div class="setting-label"><label for="speed">سرعت خواندن</label><output id="speed-value" for="speed" dir="ltr">1.0×</output></div>
+          <input id="speed" type="range" min="0.75" max="1.25" step="0.05" value="1" dir="ltr" aria-valuetext="سرعت معمولی">
+          <div class="range-labels"><span>آرام‌تر</span><span>تندتر</span></div>
+          <div class="setting-label pause-label"><label for="pause">مکث بین جمله‌ها</label><span>ثانیه</span></div>
+          <select id="pause"><option value="0.2">کوتاه · ۰٫۲ ثانیه</option><option value="0.4" selected>متعادل · ۰٫۴ ثانیه</option><option value="0.7">بلند · ۰٫۷ ثانیه</option></select>
+          <label class="switch-row" for="numbers"><span>خواندن عددها به فارسی<small>مثلاً ۱۴۰۵ ← هزار و چهارصد و پنج</small></span><input id="numbers" type="checkbox" role="switch" checked><span class="switch-track" aria-hidden="true"></span></label>
+          <details class="pronunciation"><summary>اصلاح تلفظ واژه‌ها <span>اختیاری</span></summary><p id="pronunciation-help">هر واژه و تلفظ دلخواهش در یک خط. می‌توانید از اعراب هم استفاده کنید.</p><label class="sr-only" for="pronunciations">واژه‌ها و تلفظ دلخواه</label><textarea id="pronunciations" rows="3" maxlength="12000" placeholder="مهر = مِهر&#10;API = اِی پی آی" aria-describedby="pronunciation-help"></textarea></details>
+          <button class="button preview-button" id="preview"><svg><use href="#i-play"/></svg><span id="preview-label">آزمایش ابتدای متن</span></button>
+          <p class="voice-note">برای نام‌ها و واژه‌های چندخوانشی، اول نمونه را بشنوید و تلفظ را تنظیم کنید.</p>
+        </aside>
+
+        <section class="generation-card card" aria-label="تولید و دریافت صوت">
+          <div class="generate-row"><div class="generate-description"><span class="step-number">۰۳</span><div><h2>وقت شنیدن است.</h2><p id="engine-caption">بار اول، حدود ۹۰ مگابایت فایل صوت‌ساز دریافت می‌شود.</p></div></div><button class="button primary generate-button" id="generate"><svg><use href="#i-wave"/></svg><span>ساخت فایل صوتی</span><svg class="arrow-icon"><use href="#i-arrow"/></svg></button></div>
+          <div id="progress-panel" class="progress-panel" hidden>
+            <div class="progress-title"><strong id="progress-heading">آماده‌سازی صدا…</strong><bdi id="progress-number">۰٪</bdi></div>
+            <progress id="progress" max="100" value="0" aria-label="پیشرفت تولید صوت"></progress>
+            <p id="progress-detail" role="status" aria-live="polite">در حال آماده‌سازی…</p>
+            <div class="progress-actions"><button class="button small secondary" id="pause-job">مکث پس از این بخش</button><button class="button small ghost" id="stop-job">توقف فوری و ذخیره</button></div>
+          </div>
+          <div class="audio-output" id="output" hidden>
+            <div class="output-header"><span class="output-icon"><svg><use href="#i-check"/></svg></span><div><h3 id="output-title">صدای شما آماده است</h3><p id="output-meta"></p></div><span class="file-format">WAV <span>22.05 kHz</span></span></div>
+            <audio id="audio" controls preload="metadata" aria-label="پخش فایل صوتی تولیدشده"></audio>
+            <a id="download" class="button secondary" download="ava.wav"><svg><use href="#i-download"/></svg><span>دانلود فایل صوتی</span></a>
+          </div>
+          <div id="output-empty" class="output-empty"><span class="empty-wave" data-wave="empty" aria-hidden="true"></span><p>صدای بعدی شما، از همین‌جا شروع می‌شود.</p><span>WAV · MONO · 16 BIT</span></div>
+        </section>
+      </div>
+
+      <section id="guide" class="guide" aria-labelledby="guide-heading">
+        <div class="guide-intro"><span class="eyebrow">بهتر بنویسید، بهتر بشنوید</span><h2 id="guide-heading">چند نکته برای یک صدای بهتر</h2><p>یک‌بار تنظیم کنید؛ بارها روایت کنید.</p></div>
+        <div class="guide-items"><details><summary>چطور تلفظ فارسی را دقیق‌تر کنم؟</summary><p>از نقطه و ویرگول استفاده کنید. برای واژه‌های مبهم، اعراب بگذارید یا تلفظ دلخواه را در بخش اصلاح تلفظ وارد کنید. مدل امیر فارسی است، اما تلفظ بی‌خطای تمام نام‌ها و واژه‌ها تضمین نمی‌شود. پیش از تولید متن بلند، نمونه را بشنوید.</p></details><details><summary>آیا متن ۳۰ دقیقه‌ای هم قابل تبدیل است؟</summary><p>بله؛ متن تا ۱۲۰ هزار نویسه، بخش‌به‌بخش تولید و در همین مرورگر ذخیره می‌شود. فایل نیم‌ساعته حدود ۸۰ مگابایت است. سرعت تولید به دستگاه بستگی دارد. تب را باز نگه دارید؛ پس از وقفه می‌توانید ادامه دهید. پاک کردن داده‌های مرورگر، پروژهٔ ذخیره‌شده را حذف می‌کند.</p></details><details><summary>متن من کجا پردازش می‌شود؟</summary><p>تولید صدا روی دستگاه شما انجام می‌شود. فقط فایل‌های برنامه و مدل صدا از همین سایت دریافت می‌شوند؛ متن به سرویس تبدیل گفتار ارسال نمی‌شود. پروژه و پیش‌نویس در مرورگر فعلی ذخیره می‌شوند. استفاده از نسخهٔ جدید Chrome یا Edge روی رایانه پیشنهاد می‌شود.</p></details><details><summary>فایل خروجی و هزینهٔ استفاده چطور است؟</summary><p>خروجی یک فایل WAV تک‌کاناله، ۱۶ بیت و با نرخ ۲۲٬۰۵۰ هرتز است. این نسخه به حساب کاربری، اشتراک و کلید API نیاز ندارد. پخش، جابه‌جایی و دانلود صوت پس از پایان تولید در دسترس است.</p></details></div>
+      </section>
+    </main>
+    <footer><a class="footer-brand" href="#studio">آوا<span>برای کلمه‌هایی که باید شنیده شوند.</span></a><span>ساخته‌شده با Piper و فونت وزیرمتن <span class="footer-dot">•</span> <a href="./licenses/THIRD_PARTY_NOTICES.md" target="_blank" rel="noopener">منابع و مجوزها</a></span></footer>
+  </div>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <noscript><p class="notice error">برای اجرای استودیوی آوا، جاوااسکریپت مرورگر را فعال کنید.</p></noscript>
+</body>
+</html>

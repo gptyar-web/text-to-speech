@@ -1,0 +1,27 @@
+{
+  "name": "ava-persian-speech-studio",
+  "version": "1.0.0",
+  "description": "A browser-based Persian speech studio for GitHub Pages.",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/serve.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "test:browser": "playwright test",
+    "test:voice": "VOICE_TEST=1 playwright test tests/voice.spec.mjs",
+    "test:long": "LONG_TEST=1 playwright test tests/voice.spec.mjs --timeout=3600000"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "dependencies": {
+    "@diffusionstudio/piper-wasm": "1.0.0",
+    "@fontsource-variable/vazirmatn": "5.2.8",
+    "onnxruntime-web": "1.17.3"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@playwright/test": "1.64.1"
+  }
+}
