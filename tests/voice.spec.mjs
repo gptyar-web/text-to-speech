@@ -6,6 +6,8 @@ test('Real Persian model produces non-silent, playable speech with no external t
   test.setTimeout(process.env.LONG_TEST ? 3600000 : 240000);
   const errors = [];
   const external = [];
+  const browserMessages = [];
+  page.on('console', message => { if (['warning', 'error'].includes(message.type())) browserMessages.push(message.text()); });
   page.on('pageerror', error => errors.push(error.message));
   page.on('request', request => { if (!request.url().startsWith('http://127.0.0.1:4173') && !request.url().startsWith('blob:')) external.push(request.url()); });
   await page.goto('/');
@@ -15,7 +17,8 @@ test('Real Persian model produces non-silent, playable speech with no external t
   await page.locator('#text').fill(text);
   await expect(page.locator('#generate')).toBeEnabled();
   await page.locator('#generate').click();
-  await expect(page.locator('#output')).toBeVisible({timeout: process.env.LONG_TEST ? 3500000 : 220000});
+  await page.waitForFunction(() => !document.getElementById('output').hidden || !document.getElementById('error').hidden, undefined, {timeout: process.env.LONG_TEST ? 3500000 : 220000});
+  if (await page.locator('#error').isVisible()) console.log('Voice failure:', {messages: browserMessages, detail: await page.locator('#progress-detail').textContent(), error: await page.locator('#error').textContent()});
   await expect(page.locator('#error')).toBeHidden();
   await expect(page.locator('#progress-heading')).toContainText('آماده است');
   const result = await page.locator('#download').evaluate(async element => {

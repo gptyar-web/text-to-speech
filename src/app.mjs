@@ -6,6 +6,10 @@ const $ = id => document.getElementById(id);
 const fa = value => new Intl.NumberFormat('fa-IR').format(value);
 const faTime = value => formatTime(value).replace(/\d/g, digit => '۰۱۲۳۴۵۶۷۸۹'[Number(digit)]);
 let worker;
+let workerGenerations = 0;
+// The upstream CLI retains temporary argv on its fixed WASM stack. Recreate
+// the worker at a bounded interval to release all phonemizer/runtime memory.
+const MAX_WORKER_GENERATIONS = 16;
 let rpcCounter = 0;
 const pending = new Map();
 let busy = false;
@@ -19,7 +23,6 @@ let previewURL;
 let previewAudio;
 let saveTimer;
 let toastTimer;
-let currentPhase = '';
 let sessionStarted;
 let sessionStartIndex;
 let appReady = false;
@@ -111,7 +114,6 @@ function progress(heading, detail, percentage = 0) {
 }
 
 function engineProgress(event) {
-  currentPhase = event.phase;
   if (event.phase === 'download') {
     const percent = event.loaded / event.total * 100;
     progress('دریافت صدای فارسی', `${fa((event.loaded / 1048576).toFixed(1))} از ${fa((event.total / 1048576).toFixed(1))} مگابایت؛ این فایل برای استفادهٔ بعدی ذخیره می‌شود.`, percent);
@@ -133,6 +135,7 @@ function stopWorker(reason = new DOMException('تولید متوقف شد؛ بخ
 
 function rpc(type, data = {}) {
   if (!worker) {
+    workerGenerations = 0;
     worker = new Worker(new URL('./worker.js', import.meta.url));
     worker.onmessage = ({data: message}) => {
       if (message.type === 'progress') { engineProgress(message); return; }
@@ -159,6 +162,16 @@ function rpc(type, data = {}) {
     pending.set(id, {resolve, reject, timer});
     worker.postMessage({id, type, ...data});
   });
+}
+
+async function synthesize(text, preferences) {
+  if (workerGenerations >= MAX_WORKER_GENERATIONS) {
+    stopWorker();
+    await rpc('init');
+  }
+  const audio = await rpc('generate', {text, speed: preferences.speed, pause: preferences.pause});
+  workerGenerations++;
+  return audio;
 }
 
 async function acquireWakeLock() {
@@ -211,6 +224,7 @@ async function displayOutput(complete = true) {
 
 async function run(resume = false) {
   if (busy) return;
+  let ownsProject = false;
   $('error').hidden = true;
   try {
     const source = $('text').value;
@@ -220,9 +234,19 @@ async function run(resume = false) {
     if (!resume) {
       prepared = splitText(prepareText(source, preferences));
       if (!prepared.length || !/[\p{L}\p{N}]/u.test(source)) throw new Error('متن باید دست‌کم یک واژه داشته باشد.');
-      if (job && !window.confirm('با شروع پروژهٔ تازه، صوت ذخیره‌شدهٔ قبلی جایگزین می‌شود. در صورت نیاز، اول آن را دانلود کنید. ادامه می‌دهید؟')) return;
     }
     await exclusive(async () => {
+      // Re-read under the cross-tab lock: a paused tab may hold an old project.
+      const latest = await getState('job');
+      if (resume) {
+        if (!latest || latest.id !== job?.id) throw new Error('پروژه در تب دیگری تغییر کرده است. صفحه را تازه کنید تا آخرین روایت نمایش داده شود.');
+        job = latest;
+        if (job.next === job.chunks.length) { await displayOutput(true); return; }
+      } else {
+        job = latest;
+        if (job && !window.confirm('با شروع پروژهٔ تازه، صوت ذخیره‌شدهٔ قبلی جایگزین می‌شود. در صورت نیاز، اول آن را دانلود کنید. ادامه می‌دهید؟')) return;
+      }
+      ownsProject = true;
       setBusy(true);
       pauseRequested = false;
       $('restore').hidden = true;
@@ -246,7 +270,7 @@ async function run(resume = false) {
         const completedHere = index - sessionStartIndex;
         const remaining = completedHere > 0 ? ((performance.now() - sessionStarted) / 1000 / completedHere * (job.chunks.length - index)) : null;
         progress('در حال ساخت روایت شما', `بخش ${fa(index + 1)} از ${fa(job.chunks.length)} · ${faTime(job.totalSamples / sampleRate)} صوت آماده${remaining ? ` · حدود ${faTime(remaining)} تا پایان` : ' · زمان تولید به توان دستگاه بستگی دارد'}`, index / job.chunks.length * 100);
-        const audio = await rpc('generate', {text: job.chunks[index], speed: job.settings.speed, pause: job.settings.pause});
+        const audio = await synthesize(job.chunks[index], job.settings);
         if (audio.sampleRate !== job.sampleRate || audio.samples * 2 !== audio.pcm.byteLength) throw new Error('بخش صوتی معتبر نیست.');
         const nextJob = {...job, next: index + 1, totalSamples: job.totalSamples + audio.samples, status: 'running'};
         await commitPart(index, new Blob([audio.pcm], {type: 'application/octet-stream'}), nextJob);
@@ -263,7 +287,7 @@ async function run(resume = false) {
   } catch (error) {
     if (error.name !== 'AbortError') showError(error);
     else toast('تولید متوقف شد. بخش‌های کامل محفوظ‌اند.');
-    if (job && job.next < job.chunks.length) {
+    if (ownsProject && job && job.next < job.chunks.length) {
       job = {...job, status: 'paused'};
       try { await setState('job', job); await displayOutput(false); } catch { /* Preserve the previous atomic checkpoint. */ }
     }
@@ -291,7 +315,7 @@ async function preview() {
       document.querySelector('.progress-actions').hidden = false;
       await rpc('init');
       progress('ساخت نمونهٔ کوتاه', 'در حال آماده‌سازی صدای ابتدای متن…');
-      const audio = await rpc('generate', {text: chunks[0], speed: preferences.speed, pause: preferences.pause});
+      const audio = await synthesize(chunks[0], preferences);
       const wav = makeWav([audio.pcm], audio.samples, audio.sampleRate);
       previewAudio?.pause();
       if (previewURL) URL.revokeObjectURL(previewURL);
@@ -365,7 +389,11 @@ $('stop-job').addEventListener('click', () => { pauseRequested = true; stopWorke
 $('discard').addEventListener('click', async () => {
   if (busy || !window.confirm('پروژهٔ صوتی قبلی و بخش‌های آمادهٔ آن حذف شوند؟ متن ویرایشگر باقی می‌ماند.')) return;
   try {
-    await exclusive(async () => { await resetJob(); job = undefined; clearOutput(); showRestore(); $('progress-panel').hidden = true; toast('پروژهٔ قبلی حذف شد.'); });
+    await exclusive(async () => {
+      const latest = await getState('job');
+      if (latest?.id !== job?.id) throw new Error('پروژه در تب دیگری تغییر کرده است. ابتدا صفحه را تازه کنید.');
+      await resetJob(); job = undefined; clearOutput(); showRestore(); $('progress-panel').hidden = true; toast('پروژهٔ قبلی حذف شد.');
+    });
   } catch (error) { showError(error); }
 });
 document.addEventListener('visibilitychange', () => { if (busy && document.visibilityState === 'visible') acquireWakeLock(); });
