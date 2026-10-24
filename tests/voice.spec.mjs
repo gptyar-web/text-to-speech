@@ -12,12 +12,17 @@ test('Real Persian model produces non-silent, playable speech with no external t
   page.on('request', request => { if (!request.url().startsWith('http://127.0.0.1:4173') && !request.url().startsWith('blob:')) external.push(request.url()); });
   await page.goto('/');
   const text = process.env.LONG_TEST
-    ? Array.from({length: 105}, () => 'سلام. به استودیوی آوا خوش آمدید. امروز می‌خواهیم دربارهٔ زیبایی زبان فارسی صحبت کنیم. هر کلمه می‌تواند آغاز یک داستان تازه باشد. زندگی پر از فرصت‌های تازه برای یاد گرفتن و شنیدن است.').join(' ')
+    ? Array.from({length: 125}, () => 'سلام. به استودیوی آوا خوش آمدید. امروز می‌خواهیم دربارهٔ زیبایی زبان فارسی صحبت کنیم. هر کلمه می‌تواند آغاز یک داستان تازه باشد. زندگی پر از فرصت‌های تازه برای یاد گرفتن و شنیدن است.').join(' ')
     : 'سلام. به استودیوی آوا خوش آمدید. سال ۱۴۰۵ آغاز یک داستان تازه است. امروز یک روز زیبا برای شنیدن صدای فارسی است.';
   await page.locator('#text').fill(text);
   await expect(page.locator('#generate')).toBeEnabled();
   await page.locator('#generate').click();
-  await page.waitForFunction(() => !document.getElementById('output').hidden || !document.getElementById('error').hidden, undefined, {timeout: process.env.LONG_TEST ? 3500000 : 220000});
+  const reporter = process.env.LONG_TEST ? setInterval(async () => {
+    try { console.log('Long audio progress:', await page.locator('#progress-detail').textContent()); } catch { /* Page may be closing. */ }
+  }, 30000) : null;
+  try {
+    await page.waitForFunction(() => !document.getElementById('output').hidden || !document.getElementById('error').hidden, undefined, {timeout: process.env.LONG_TEST ? 3500000 : 220000});
+  } finally { if (reporter) clearInterval(reporter); }
   if (await page.locator('#error').isVisible()) console.log('Voice failure:', {messages: browserMessages, detail: await page.locator('#progress-detail').textContent(), error: await page.locator('#error').textContent()});
   await expect(page.locator('#error')).toBeHidden();
   await expect(page.locator('#progress-heading')).toContainText('آماده است');
@@ -35,13 +40,13 @@ test('Real Persian model produces non-silent, playable speech with no external t
     const sampleRate = view.getUint32(24, true);
     return {duration: samples / sampleRate, sampleRate, bytes: buffer.byteLength, max, rms: Math.sqrt(energy / samples)};
   });
+  await writeFile('test-results/real-voice-metrics.json', JSON.stringify(result, null, 2));
+  console.log('Real voice metrics:', result);
   expect(result.sampleRate).toBe(22050);
   expect(result.max).toBeGreaterThan(0.03);
   expect(result.rms).toBeGreaterThan(0.005);
   expect(result.duration).toBeGreaterThan(process.env.LONG_TEST ? 1800 : 5);
   expect(errors).toEqual([]);
   expect(external).toEqual([]);
-  await writeFile('test-results/real-voice-metrics.json', JSON.stringify(result, null, 2));
   await page.screenshot({path: 'test-results/ava-real-output.png', fullPage: true});
-  console.log('Real voice metrics:', result);
 });
