@@ -7,9 +7,13 @@
 - **[@diffusionstudio/piper-wasm](https://github.com/diffusion-studio/piper-wasm)** 1.0.0 — package MIT License; contains Piper phonemization and **[eSpeak NG](https://github.com/espeak-ng/espeak-ng)**. eSpeak NG is licensed under **GPL-3.0-or-later**. The package's MIT label does not replace the licenses of included components. Corresponding build instructions are in the linked repository. [Piper phonemizer source](https://github.com/rhasspy/piper-phonemize), [WASM build source](https://github.com/wide-video/piper-phonemize). These components run as separate bundled WASM files.
 - **[Vazirmatn](https://github.com/rastikerdar/vazirmatn)** — Copyright 2015 The Vazirmatn Project Authors. **SIL Open Font License 1.1**. Distributed through `@fontsource-variable/vazirmatn` 5.2.8. The full font license is included at `Vazirmatn-OFL.txt` in this directory.
 
-## MIT License (application code and MIT components)
+## Application license
 
-Copyright (c) 2026 gptyar-web; respective upstream authors retain their own copyrights.
+The application source is licensed under GPL-3.0-or-later. The complete license is included in `LICENSE` in the source repository and `GPL-3.0.txt` in the deployed licenses directory. All application source, pinned dependencies and WASM build references are available in [gptyar-web/text-to-speech](https://github.com/gptyar-web/text-to-speech). Included components retain their upstream licenses.
+
+## MIT License (MIT components)
+
+Respective upstream authors retain their own copyrights.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

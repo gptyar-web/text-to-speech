@@ -49,5 +49,6 @@ for (const subset of ['arabic', 'latin']) {
 await mkdir('dist/licenses', {recursive: true});
 await copyFile('node_modules/@fontsource-variable/vazirmatn/LICENSE', 'dist/licenses/Vazirmatn-OFL.txt');
 await copyFile('THIRD_PARTY_NOTICES.md', 'dist/licenses/THIRD_PARTY_NOTICES.md');
+await copyFile('LICENSE', 'dist/licenses/GPL-3.0.txt');
 await writeFile('dist/.nojekyll', '');
 console.log('Built dist/: same-origin model, WASM runtime, fonts, and application.');
